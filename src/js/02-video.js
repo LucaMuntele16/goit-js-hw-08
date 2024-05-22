@@ -15,12 +15,12 @@ player.on('play', function() {
 })
 });
 
-player.on('pause',function() {
+player.on('pause', throttle(function() {
   player.getCurrentTime().then(function(seconds) {
     localStorage.setItem("videoplayer-current-time", seconds);
 })
+}, 1000));
 
-});
 
 
 
