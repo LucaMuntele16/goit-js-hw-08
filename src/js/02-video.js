@@ -5,21 +5,29 @@ import throttle from 'lodash.throttle';
 const iframe = document.querySelector('iframe');
 const player = new Player(iframe);
 
+const localStorageKey = "videoplayer-current-time";
+
+const saveCurrentTime = throttle((currentTime) =>{
+  localStorage.setItem(localStorageKey,currentTime);
+}, 1000);
 
 
-
-
-
-player.on('play', function() {
-  player.setCurrentTime(localStorage.getItem("videoplayer-current-time")).then(function(seconds) {
+player.on('timeupdate', (event) => {
+  saveCurrentTime(event.seconds);
 })
+
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTime = localStorage.getItem(localStorageKey);
+  if (savedTime) {
+    player.setCurrentTime(savedTime).catch((error) => {
+      console.error('Error setting current time:', error);
+    });
+  }
 });
 
-player.on('pause', throttle(function() {
-  player.getCurrentTime().then(function(seconds) {
-    localStorage.setItem("videoplayer-current-time", seconds);
-})
-}, 1000));
+
+
+
 
 
 
